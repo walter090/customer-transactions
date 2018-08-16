@@ -10,11 +10,11 @@ class Transaction(models.Model):
 
     amount = models.IntegerField(null=False, blank=False)
     category = models.CharField(max_length=30,
-                                choices=[(key, key.value for key in SpendingCategory)])
+                                choices=[(key, key.value) for key in SpendingCategory])
 
     transfer_time = models.DateTimeField(null=False, default=timezone.now, editable=False)
     transfer_method = models.CharField(max_length=30,
-                                       choices=[(key, key.value for key in MethodOfTransaction)])
+                                       choices=[(key, key.value) for key in MethodOfTransaction])
 
     class Meta:
         ordering = ['-transfer_time']
