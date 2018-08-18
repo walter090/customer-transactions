@@ -1,2 +1,4 @@
 .idea
-*/.env
+.env
+secret_constants.py
+*.log
