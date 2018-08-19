@@ -2,19 +2,43 @@ from django.db import models
 from django.utils import timezone
 
 from operation.util import auxiliary
-from .management.enums import MethodOfTransaction, SpendingCategory
+from .management.managers import TransactionManager
 
 
 class Transaction(models.Model):
-    identifier = models.BigIntegerField(unique=True, primary_key=True, default=auxiliary.make_id)
+    TRANSFER_METHODS = [
+        ('ATM', 'ATM/Cash'),
+        ('WIRE', 'Wire Transfer'),
+        ('CHECK', 'Check'),
+        ('MONEY_ORDER', 'Money Order'),
+        ('CARD', 'Card'),
+        ('ONLINE', 'Online')
+    ]
 
-    amount = models.IntegerField(null=False, blank=False)
+    SPENDING_CATEGORIES = [
+        ('UTILITIES', 'Utilities'),
+        ('GROCERIES', 'Groceries'),
+        ('ENTERTAINMENT', 'Entertainment'),
+        ('DINING', 'Dining'),
+        ('TRAVEL', 'Travel'),
+        ('MEDICAL', 'Medical'),
+    ]
+
+    identifier = models.CharField(max_length=20, unique=True,
+                                  primary_key=True, default=auxiliary.make_id)
+    customer_id = models.CharField(max_length=20, null=False,
+                                   blank=False)
+
+    amount = models.DecimalField(null=False, blank=False,
+                                 decimal_places=2, max_digits=32)
     category = models.CharField(max_length=30,
-                                choices=[(key, key.value) for key in SpendingCategory])
+                                choices=SPENDING_CATEGORIES)
 
     transfer_time = models.DateTimeField(null=False, default=timezone.now, editable=False)
     transfer_method = models.CharField(max_length=30,
-                                       choices=[(key, key.value) for key in MethodOfTransaction])
+                                       choices=TRANSFER_METHODS)
+
+    objects = TransactionManager()
 
     class Meta:
         ordering = ['-transfer_time']
