@@ -22,6 +22,7 @@ class Transaction(models.Model):
         ('DINING', 'Dining'),
         ('TRAVEL', 'Travel'),
         ('MEDICAL', 'Medical'),
+        ('INCOME', 'Income'),
     ]
 
     identifier = models.CharField(max_length=20, unique=True,
@@ -31,12 +32,11 @@ class Transaction(models.Model):
 
     amount = models.DecimalField(null=False, blank=False,
                                  decimal_places=2, max_digits=32)
-    category = models.CharField(max_length=30,
-                                choices=SPENDING_CATEGORIES)
+    category = models.CharField(max_length=30, choices=SPENDING_CATEGORIES)
 
-    transfer_time = models.DateTimeField(null=False, default=timezone.now, editable=False)
-    transfer_method = models.CharField(max_length=30,
-                                       choices=TRANSFER_METHODS)
+    transfer_time = models.DateTimeField(null=False, default=timezone.now,
+                                         editable=False)
+    transfer_method = models.CharField(max_length=30, choices=TRANSFER_METHODS)
 
     objects = TransactionManager()
 
