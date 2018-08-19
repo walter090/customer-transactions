@@ -9,7 +9,7 @@ from .secret_constants import APIConsts
 
 class TransactionManager(Manager):
     def create(self, customer_id, amount,
-               category, transfer_method):
+               category, transfer_method, token=None):
         """ Create a new transaction, checks if the customer_id exists
         before saving to db.
 
@@ -18,6 +18,7 @@ class TransactionManager(Manager):
             amount:
             category:
             transfer_method:
+            token:
 
         Returns:
             None
@@ -28,7 +29,9 @@ class TransactionManager(Manager):
         url = os.path.join(APIConsts.CUSTOMER_API_ROOT.value, 'transfer', '')
         data = {'amount': amount, 'customer_id': customer_id}
 
-        response = requests.post(url=url, data=data)
+        headers = {'Authorization': token} if token else {}
+
+        response = requests.post(url=url, data=data, headers=headers)
         if response.status_code != requests.codes.ok:
             response.raise_for_status()
             return

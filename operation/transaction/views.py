@@ -8,8 +8,6 @@ import requests
 from dateutil.relativedelta import relativedelta
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_protect
 from django_filters.rest_framework import DjangoFilterBackend
 from requests.exceptions import HTTPError
 from rest_framework.decorators import action
@@ -34,7 +32,6 @@ class TransactionView(ModelViewSet):
     ordering = ['-transfer_time']
     search_fields = ['=category', '=transfer_method']
 
-    @method_decorator(csrf_protect)
     def create(self, request, *args, **kwargs):
         """ Create a transaction.
         """
@@ -45,11 +42,17 @@ class TransactionView(ModelViewSet):
             customer_id = data['customer_id']
             amount = data['amount']
 
+            if not APIConsts.TESTING.value:
+                token = request.META['HTTP_AUTHORIZATION']
+            else:
+                token = None
+
             try:
                 Transaction.objects.create(customer_id=customer_id,
                                            amount=amount,
                                            category=data['category'],
-                                           transfer_method=data['transfer_method'])
+                                           transfer_method=data['transfer_method'],
+                                           token=token)
             except HTTPError as he:
                 logger.warning(he)
                 return Response({'error': str(he)}, he.response.status_code)

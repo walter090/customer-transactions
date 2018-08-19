@@ -27,6 +27,9 @@ class CustomerManager(BaseUserManager):
 
         customer = self.model(**kwargs)
 
+        if ' ' in username or '\\' in username:
+            raise ValidationError('Space and backslash not allowed in username.')
+
         customer.username = username
         customer.email = email
 
