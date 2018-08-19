@@ -43,7 +43,7 @@ class TransactionView(ModelViewSet):
             amount = data['amount']
 
             if not APIConsts.TESTING.value:
-                token = request.META['HTTP_AUTHORIZATION']
+                token = '' if 'HTTP_AUTHORIZATION' not in request.META else request.META['HTTP_AUTHORIZATION']
             else:
                 token = None
 
@@ -71,8 +71,8 @@ class TransactionView(ModelViewSet):
     @action(methods=['post'], detail=False)
     def info(self, request, *args, **kwargs):
         customer_id = request.data['customer_id']
-        if not APIConsts.TESTING:
-            token = request.META['HTTP_AUTHORIZATION']
+        if not APIConsts.TESTING.value:
+            token = '' if 'HTTP_AUTHORIZATION' not in request.META else request.META['HTTP_AUTHORIZATION']
 
             url = os.path.join(APIConsts.CUSTOMER_API_ROOT.value, customer_id, 'verify', '')
             headers = {'Authorization': token}

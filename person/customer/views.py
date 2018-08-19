@@ -35,7 +35,7 @@ class CustomerView(ModelViewSet):
             else serializer_assignment[self.action]
 
     def get_permissions(self):
-        if APIConsts.TESTING:
+        if APIConsts.TESTING.value:
             permission_classes = [permissions.AllowAny]
             return [permission() for permission in permission_classes]
 
@@ -83,7 +83,7 @@ class CustomerView(ModelViewSet):
         if APIConsts.TESTING.value:
             return Response(customer_data, status=200)
 
-        token = request.META['HTTP_AUTHORIZATION']
+        token = '' if 'HTTP_AUTHORIZATION' not in request.META else request.META['HTTP_AUTHORIZATION']
         data = {'customer_id': customer_id}
         headers = {'Authorization': token}
         url = os.path.join(APIConsts.TRANSACTION_API_ROOT.value, 'info', '')
