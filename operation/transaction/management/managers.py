@@ -36,8 +36,7 @@ class TransactionManager(Manager):
             if response.status_code != requests.codes.ok:
                 response.raise_for_status()
                 return
-
-        transaction = self.model(amount=amount, category=category,
+        transaction = self.model(amount=amount, category=category if amount < 0 else 'INCOME',
                                  transfer_method=transfer_method, customer_id=customer_id)
         transaction.full_clean()
         transaction.save()
