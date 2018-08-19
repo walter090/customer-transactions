@@ -26,7 +26,7 @@ class TransactionManager(Manager):
         if amount == 0:
             raise ValidationError
 
-        if not APIConsts.TESTING:
+        if not APIConsts.TESTING.value:
             url = os.path.join(APIConsts.CUSTOMER_API_ROOT.value, 'transfer', '')
             data = {'amount': amount, 'customer_id': customer_id}
 
