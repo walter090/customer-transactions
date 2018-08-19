@@ -70,15 +70,16 @@ class TransactionView(ModelViewSet):
 
     @action(methods=['post'], detail=False)
     def info(self, request, *args, **kwargs):
-        token = request.META['HTTP_AUTHORIZATION']
         customer_id = request.data['customer_id']
+        if not APIConsts.TESTING:
+            token = request.META['HTTP_AUTHORIZATION']
 
-        url = os.path.join(APIConsts.CUSTOMER_API_ROOT.value, customer_id, 'verify', '')
-        headers = {'Authorization': token}
-        response = requests.get(url=url, headers=headers)
+            url = os.path.join(APIConsts.CUSTOMER_API_ROOT.value, customer_id, 'verify', '')
+            headers = {'Authorization': token}
+            response = requests.get(url=url, headers=headers)
 
-        if response.status_code != requests.codes.ok:
-            return Response({'error': Response}, status=response.status_code)
+            if response.status_code != requests.codes.ok:
+                return Response({'error': response}, status=response.status_code)
 
         today = datetime.date.today()
         day = today - relativedelta(months=1)

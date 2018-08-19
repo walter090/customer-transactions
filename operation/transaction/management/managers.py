@@ -15,7 +15,7 @@ class TransactionManager(Manager):
 
         Args:
             customer_id: str, Customer identifier, pk.
-            amount:
+            amount: str,
             category:
             transfer_method:
             token:
@@ -26,15 +26,16 @@ class TransactionManager(Manager):
         if amount == 0:
             raise ValidationError
 
-        url = os.path.join(APIConsts.CUSTOMER_API_ROOT.value, 'transfer', '')
-        data = {'amount': amount, 'customer_id': customer_id}
+        if not APIConsts.TESTING:
+            url = os.path.join(APIConsts.CUSTOMER_API_ROOT.value, 'transfer', '')
+            data = {'amount': amount, 'customer_id': customer_id}
 
-        headers = {'Authorization': token} if token else {}
+            headers = {'Authorization': token} if token else {}
 
-        response = requests.post(url=url, data=data, headers=headers)
-        if response.status_code != requests.codes.ok:
-            response.raise_for_status()
-            return
+            response = requests.post(url=url, data=data, headers=headers)
+            if response.status_code != requests.codes.ok:
+                response.raise_for_status()
+                return
 
         transaction = self.model(amount=amount, category=category,
                                  transfer_method=transfer_method, customer_id=customer_id)
