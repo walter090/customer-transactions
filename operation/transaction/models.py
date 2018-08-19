@@ -22,6 +22,7 @@ class Transaction(models.Model):
         ('DINING', 'Dining'),
         ('TRAVEL', 'Travel'),
         ('MEDICAL', 'Medical'),
+        ('MISC', 'Miscellaneous'),
         ('INCOME', 'Income'),
     ]
 
