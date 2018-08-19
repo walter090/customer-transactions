@@ -1,8 +1,10 @@
 import datetime
 import logging
+import os
 from collections import defaultdict
-from decimal import getcontext, Decimal
+from decimal import Decimal
 
+import requests
 from dateutil.relativedelta import relativedelta
 from django.core.exceptions import ValidationError
 from django.db.models import Q
@@ -15,11 +17,9 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-import os
 from .management.paginators import TransactionPaginator
-from .models import Transaction
-import requests
 from .management.secret_constants import APIConsts
+from .models import Transaction
 from .serializers import TransactionSerializer
 
 logger = logging.getLogger(__name__)

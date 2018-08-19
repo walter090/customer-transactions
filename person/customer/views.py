@@ -1,23 +1,20 @@
 import os
+from decimal import Decimal
 
-from rest_framework.decorators import action
 import requests
 from django.core.exceptions import ValidationError
-from django.views.decorators.csrf import csrf_protect
-from django.utils.decorators import method_decorator
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import permissions
+from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.views import APIView
-from rest_framework import permissions
-from .management.permissions import IsSelfOrAdmin
 
+from . import serializers
 from .management.paginators import CustomerPaginator
+from .management.permissions import IsSelfOrAdmin
 from .management.secret_constants import APIConsts
 from .models import Customer
-from . import serializers
-from decimal import Decimal
 
 
 class CustomerView(ModelViewSet):
