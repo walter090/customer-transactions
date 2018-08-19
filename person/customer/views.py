@@ -46,8 +46,6 @@ class CustomerView(ModelViewSet):
                 or self.action == 'retrieve' \
                 or self.action == 'verify':
             permission_classes = [IsSelfOrAdmin]
-        elif self.action == 'verify':
-            permission_classes = [permissions.IsAuthenticated]
         else:
             permission_classes = [permissions.AllowAny]
         return [permission() for permission in permission_classes]
@@ -111,6 +109,6 @@ class CustomerView(ModelViewSet):
         customer.save()
         return Response({'message': 'Account balance updated.'}, status=200)
 
-    @action(methods=['get'], detail=False)
+    @action(methods=['get'], detail=True)
     def verify(self, request, *args, **kwargs):
         return Response({'message': 'Token verified.'}, status=200)

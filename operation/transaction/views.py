@@ -70,7 +70,7 @@ class TransactionView(ModelViewSet):
         token = request.META['HTTP_AUTHORIZATION']
         customer_id = request.data['customer_id']
 
-        url = os.path.join(APIConsts.CUSTOMER_API_ROOT.value, 'verify', '')
+        url = os.path.join(APIConsts.CUSTOMER_API_ROOT.value, customer_id, 'verify', '')
         headers = {'Authorization': token}
         response = requests.get(url=url, headers=headers)
 
