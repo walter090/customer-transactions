@@ -11,7 +11,7 @@ class CustomerManager(BaseUserManager):
         """ Create a new customer
 
         Args:
-            balance: float, Initial deposit of account.
+            balance: str, Initial deposit of account.
             username: str, Customer account user name.
             email: str, Customer email address.
             first_name: str, Customer first name.
@@ -46,7 +46,7 @@ class CustomerManager(BaseUserManager):
         customer.birth_year = birth_year
 
         customer.occupation_type = occupation_type if occupation_type is not None else 'MISC'
-        customer.balance = balance if balance else 0
+        customer.balance = balance if balance else '0'
         customer.set_password(raw_password=password)
 
         customer.full_clean()
