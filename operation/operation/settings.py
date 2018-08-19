@@ -1,4 +1,5 @@
 import environ
+import logging
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = environ.Path(__file__) - 2
@@ -6,6 +7,10 @@ BASE_DIR = environ.Path(__file__) - 2
 env = environ.Env()
 env_file = str(BASE_DIR('.env'))
 env.read_env(env_file)
+
+logging.basicConfig(handlers=[logging.FileHandler(env('LOG_FILE'), 'w', 'utf-8')],
+                    level=env('LOG_LEVEL'),
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -33,7 +38,10 @@ LOCAL_APPS = [
     'transaction.apps.TransactionConfig',
 ]
 
-THIRD_PARTY_APPS = []
+THIRD_PARTY_APPS = [
+    'rest_framework',
+    'storages',
+]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_PARTY_APPS
 
@@ -67,7 +75,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'operation.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
@@ -81,7 +88,6 @@ DATABASES = {
         'PORT': env('DB_PORT'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -101,7 +107,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
@@ -114,7 +119,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
