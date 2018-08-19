@@ -36,7 +36,13 @@ class TransactionManager(Manager):
             if response.status_code != requests.codes.ok:
                 response.raise_for_status()
                 return
-        transaction = self.model(amount=amount, category=category if amount < 0 else 'INCOME',
+
+        if category == 'INCOME' and amount < 0:
+            category = 'MISC'
+        elif amount > 0:
+            category = 'INCOME'
+
+        transaction = self.model(amount=amount, category=category,
                                  transfer_method=transfer_method, customer_id=customer_id)
         transaction.full_clean()
         transaction.save()
