@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Manager
 
 from .secret_constants import APIConsts
+from requests.exceptions import HTTPError
 
 
 class TransactionManager(Manager):
@@ -16,10 +17,10 @@ class TransactionManager(Manager):
 
         Args:
             customer_id: str, Customer identifier, pk.
-            amount: str,
-            category:
-            transfer_method:
-            token:
+            amount: str, Amount of transaction.
+            category: str, Category of transaction.
+            transfer_method: str, Method of transfer.
+            token: str, OAuth token.
 
         Returns:
             None
@@ -36,8 +37,7 @@ class TransactionManager(Manager):
 
             response = requests.post(url=url, data=data, headers=headers)
             if response.status_code != requests.codes.ok:
-                response.raise_for_status()
-                return
+                raise HTTPError(response)
 
         if category == 'INCOME' and amount < 0:
             category = 'MISC'
