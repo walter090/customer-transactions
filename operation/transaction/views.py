@@ -3,6 +3,7 @@ import logging
 import os
 from collections import defaultdict
 from decimal import Decimal
+import json
 
 import requests
 from dateutil.relativedelta import relativedelta
@@ -99,39 +100,41 @@ class TransactionView(ModelViewSet):
                 status=200)
 
         last_month_trans = []
-        for transaction in queryset:
-            last_month_trans.append({
-                'identifier': transaction.identifier,
-                'customer_id': transaction.customer_id,
-                'amount': transaction.amount,
-                'category': transaction.category,
-                'method': transaction.transfer_method,
-                'time': transaction.transfer_time
-            })
-
         total_spending = Decimal('0')
         total_income = Decimal('0')
         methods = defaultdict(Decimal)
         spending = defaultdict(Decimal)
 
         for transaction in queryset:
+            last_month_trans.append({
+                'identifier': transaction.identifier,
+                'customer_id': transaction.customer_id,
+                'amount': transaction.amount,
+                'category': transaction.category,
+                'transfer_method': transaction.transfer_method,
+                'transfer_time': transaction.transfer_time
+            })
+
             if transaction.amount < 0:
                 total_spending -= transaction.amount
-                methods[transaction.transfer_method] += transaction.amount
-                spending[transaction.category] += transaction.amount
+                methods[transaction.transfer_method] -= transaction.amount
+                spending[transaction.category] -= transaction.amount
             else:
                 total_income += transaction.amount
 
-        methods_ratio = {key: methods[key] / total_spending for key in methods}
-        spending_ratio = {key: spending[key] / total_spending for key in spending}
+        methods_ratio = {key: str(methods[key] / total_spending) for key in methods}
+        spending_ratio = {key: str(spending[key] / total_spending) for key in spending}
+
+        methods = {key: str(methods[key]) for key in methods}
+        spending = {key: str(spending[key]) for key in spending}
 
         transaction_info = {
             'total_spending': total_spending,
             'total_income': total_income,
-            'transfer_methods': methods,
-            'transfer_methods_ratio': methods_ratio,
-            'spending': spending,
-            'spending_ratio': spending_ratio,
+            'transfer_methods': json.dumps(methods),
+            'transfer_methods_ratio': json.dumps(methods_ratio),
+            'spending': json.dumps(spending),
+            'spending_ratio': json.dumps(spending_ratio),
             'last_month_history': last_month_trans,
         }
 
