@@ -1,4 +1,5 @@
 import os
+from decimal import Decimal
 
 import requests
 from django.core.exceptions import ValidationError
@@ -23,6 +24,7 @@ class TransactionManager(Manager):
         Returns:
             None
         """
+        amount = Decimal(amount)
         if amount == 0:
             raise ValidationError
 
