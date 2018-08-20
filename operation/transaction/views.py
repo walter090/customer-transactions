@@ -101,6 +101,8 @@ class TransactionView(ModelViewSet):
         last_month_trans = []
         for transaction in queryset:
             last_month_trans.append({
+                'identifier': transaction.identifier,
+                'customer_id': transaction.customer_id,
                 'amount': transaction.amount,
                 'category': transaction.category,
                 'method': transaction.transfer_method,
