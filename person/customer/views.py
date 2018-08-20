@@ -65,7 +65,7 @@ class CustomerView(ModelViewSet):
                                         last_name=data['last_name'],
                                         birth_year=data['birth_year'],
                                         occupation_type=data['occupation_type'],
-                                        balance=data['balance'],
+                                        balance=None if 'balance' not in data else data['balance'],
                                         password=data['password'])
             except ValidationError as ve:
                 return Response({'error': ve}, status=400)
