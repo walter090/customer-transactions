@@ -1,9 +1,9 @@
 import datetime
+import json
 import logging
 import os
 from collections import defaultdict
 from decimal import Decimal
-import json
 
 import requests
 from dateutil.relativedelta import relativedelta
@@ -19,7 +19,7 @@ from rest_framework.viewsets import ModelViewSet
 from .management.paginators import TransactionPaginator
 from .management.secret_constants import APIConsts
 from .models import Transaction
-from .serializers import TransactionSerializer
+from .serializers import TransactionSerializer, TransactionRetrievalSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +32,14 @@ class TransactionView(ModelViewSet):
 
     ordering = ['-transfer_time']
     search_fields = ['=category', '=transfer_method']
+
+    def get_serializer_class(self):
+        if self.action == 'destroy' or \
+                self.action == 'retrieve' or \
+                self.action == 'list':
+            return TransactionRetrievalSerializer
+        else:
+            return TransactionSerializer
 
     def create(self, request, *args, **kwargs):
         """ Create a transaction.
@@ -68,6 +76,8 @@ class TransactionView(ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         """ DELETE action not allowed on transactions."""
+        logger.warning('Request to delete transaction {} received,'
+                       ' DELETE is not allowed on transactions.'.format(self.get_object().identifier))
         return Response({'error': 'Delete action not allowed on transactions'}, status=400)
 
     @action(methods=['post'], detail=False)
