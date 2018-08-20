@@ -65,7 +65,7 @@ class TransactionView(ModelViewSet):
                                            token=token)
             except HTTPError as he:
                 logger.warning(he)
-                return Response({'error': str(he)}, he.response.status_code)
+                return Response({'error': str(he)})
             except ValidationError as ve:
                 logger.warning(ve.message)
                 return Response({'error': ve.message}, status=400)
@@ -80,6 +80,16 @@ class TransactionView(ModelViewSet):
         logger.warning('Request to delete transaction {} received,'
                        ' DELETE is not allowed on transactions.'.format(self.get_object().identifier))
         return Response({'error': 'Delete action not allowed on transactions'}, status=400)
+
+    def partial_update(self, request, *args, **kwargs):
+        logger.warning('Request to update transaction {} received,'
+                       ' PATCH is not allowed on transactions.'.format(self.get_object().identifier))
+        return Response({'error': 'PATCH action not allowed on transactions'}, status=400)
+
+    def update(self, request, *args, **kwargs):
+        logger.warning('Request to update transaction {} received,'
+                       ' PUT is not allowed on transactions.'.format(self.get_object().identifier))
+        return Response({'error': 'PUT action not allowed on transactions'}, status=400)
 
     @action(methods=['post'], detail=False)
     def info(self, request, *args, **kwargs):
