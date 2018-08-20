@@ -52,8 +52,7 @@ class TransactionView(ModelViewSet):
             amount = data['amount']
 
             if not APIConsts.TESTING.value:
-                print('HTTP_AUTHORIZATION' in request.META)
-                token = '' if 'HTTP_AUTHORIZATION' not in request.META else request.META['HTTP_AUTHORIZATION']
+                token = request.META.get('HTTP_AUTHORIZATION')
             else:
                 token = None
 
@@ -75,27 +74,13 @@ class TransactionView(ModelViewSet):
         else:
             return Response({'error': serializer.errors}, status=400)
 
-    def destroy(self, request, *args, **kwargs):
-        """ DELETE action not allowed on transactions."""
-        logger.warning('Request to delete transaction {} received,'
-                       ' DELETE is not allowed on transactions.'.format(self.get_object().identifier))
-        return Response({'error': 'Delete action not allowed on transactions'}, status=400)
-
-    def partial_update(self, request, *args, **kwargs):
-        logger.warning('Request to update transaction {} received,'
-                       ' PATCH is not allowed on transactions.'.format(self.get_object().identifier))
-        return Response({'error': 'PATCH action not allowed on transactions'}, status=400)
-
-    def update(self, request, *args, **kwargs):
-        logger.warning('Request to update transaction {} received,'
-                       ' PUT is not allowed on transactions.'.format(self.get_object().identifier))
-        return Response({'error': 'PUT action not allowed on transactions'}, status=400)
-
     @action(methods=['post'], detail=False)
     def info(self, request, *args, **kwargs):
+        """ Get transaction history for customer.
+        """
         customer_id = request.data['customer_id']
         if not APIConsts.TESTING.value:
-            token = '' if 'HTTP_AUTHORIZATION' not in request.META else request.META['HTTP_AUTHORIZATION']
+            token = request.META.get('HTTP_AUTHORIZATION')
 
             url = os.path.join(APIConsts.CUSTOMER_API_ROOT.value, customer_id, 'verify', '')
             headers = {'Authorization': token}
@@ -161,3 +146,24 @@ class TransactionView(ModelViewSet):
         }
 
         return Response(transaction_info)
+
+    def destroy(self, request, *args, **kwargs):
+        """ DELETE action not allowed on transactions.
+        """
+        logger.warning('Request to delete transaction {} received,'
+                       ' DELETE is not allowed on transactions.'.format(self.get_object().identifier))
+        return Response({'error': 'Delete action not allowed on transactions'}, status=400)
+
+    def partial_update(self, request, *args, **kwargs):
+        """ PATCH not allowed on transactions.
+        """
+        logger.warning('Request to update transaction {} received,'
+                       ' PATCH is not allowed on transactions.'.format(self.get_object().identifier))
+        return Response({'error': 'PATCH action not allowed on transactions'}, status=400)
+
+    def update(self, request, *args, **kwargs):
+        """ PUT not allowed on transactions.
+        """
+        logger.warning('Request to update transaction {} received,'
+                       ' PUT is not allowed on transactions.'.format(self.get_object().identifier))
+        return Response({'error': 'PUT action not allowed on transactions'}, status=400)
