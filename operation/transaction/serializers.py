@@ -12,3 +12,15 @@ class TransactionSerializer(HyperlinkedModelSerializer):
             'category',
             'transfer_method',
         )
+
+
+class TransactionRetrievalSerializer(HyperlinkedModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = (
+            'identifier',
+            'customer_id',
+            'amount',
+            'category',
+            'transfer_method',
+        )
