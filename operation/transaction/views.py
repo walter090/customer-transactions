@@ -129,8 +129,8 @@ class TransactionView(ModelViewSet):
             else:
                 total_income += transaction.amount
 
-        methods_ratio = {key: str(methods[key] / total_spending) for key in methods}
-        spending_ratio = {key: str(spending[key] / total_spending) for key in spending}
+        methods_ratio = {key: str(round(methods[key] / total_spending, 2)) for key in methods}
+        spending_ratio = {key: str(round(spending[key] / total_spending, 2)) for key in spending}
 
         methods = {key: str(methods[key]) for key in methods}
         spending = {key: str(spending[key]) for key in spending}
