@@ -70,6 +70,7 @@ class TransactionView(ModelViewSet):
                 logger.warning(ve.message)
                 return Response({'error': ve.message}, status=400)
 
+            logger.info('Successful transaction.')
             return Response({'message': 'Transaction made.'}, status=200)
         else:
             return Response({'error': serializer.errors}, status=400)
