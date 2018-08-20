@@ -15,9 +15,6 @@ from .management.paginators import CustomerPaginator
 from .management.permissions import IsSelfOrAdmin
 from .management.secret_constants import APIConsts
 from .models import Customer
-import logging
-
-logger = logging.getLogger(__name__)
 
 
 class CustomerView(ModelViewSet):
@@ -100,8 +97,6 @@ class CustomerView(ModelViewSet):
         transactions_data = response.json()
         customer_data['transaction_info'] = transactions_data
 
-        logger.info('Retrieved account and transaction info for customer {}'.format(customer_id))
-
         return Response(customer_data)
 
     @action(methods=['post'], detail=False)
@@ -117,11 +112,10 @@ class CustomerView(ModelViewSet):
 
         customer.balance = balance
         customer.save()
-        return Response({'message': 'Account balance updated.'}, status=200)
+        return Response({'message': 'Account balance updated.', 'balance': customer.balance}, status=200)
 
     @action(methods=['get'], detail=True)
     def verify(self, request, *args, **kwargs):
         """ Verify that a credential represents admin or user itself."""
         ip = request.META.get('REMOTE_ADDR')
-        logger.info('Verified token from {}'.format(ip))
         return Response({'message': 'Token verified.'}, status=200)

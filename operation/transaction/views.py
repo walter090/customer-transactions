@@ -66,10 +66,9 @@ class TransactionView(ModelViewSet):
                 logger.warning(he)
                 return Response({'error': str(he)})
             except ValidationError as ve:
-                logger.warning(ve.message)
-                return Response({'error': ve.message}, status=400)
+                logger.warning(ve)
+                return Response({'error': ve}, status=400)
 
-            logger.info('Successful transaction.')
             return Response({'message': 'Transaction made.'}, status=200)
         else:
             return Response({'error': serializer.errors}, status=400)
