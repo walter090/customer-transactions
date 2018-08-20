@@ -29,6 +29,7 @@ class TransactionManager(Manager):
         if amount == 0:
             raise ValidationError
 
+        balance = 0
         if not APIConsts.TESTING.value:
             url = os.path.join(APIConsts.CUSTOMER_API_ROOT.value, 'transfer', '')
             data = {'amount': amount, 'customer_id': customer_id}
@@ -38,6 +39,7 @@ class TransactionManager(Manager):
             response = requests.post(url=url, data=data, headers=headers)
             if response.status_code != requests.codes.ok:
                 raise HTTPError(response)
+            balance = str(response.json()['balance'])
 
         if category == 'INCOME' and amount < 0:
             category = 'MISC'
@@ -45,6 +47,7 @@ class TransactionManager(Manager):
             category = 'INCOME'
 
         transaction = self.model(amount=amount, category=category,
-                                 transfer_method=transfer_method, customer_id=customer_id)
+                                 transfer_method=transfer_method, customer_id=customer_id,
+                                 balance_after=balance)
         transaction.full_clean()
         transaction.save()

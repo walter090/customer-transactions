@@ -23,4 +23,5 @@ class TransactionRetrievalSerializer(HyperlinkedModelSerializer):
             'amount',
             'category',
             'transfer_method',
+            'balance_after',
         )

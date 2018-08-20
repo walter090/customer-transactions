@@ -33,6 +33,8 @@ class Transaction(models.Model):
 
     amount = models.DecimalField(null=False, blank=False,
                                  decimal_places=2, max_digits=32)
+    balance_after = models.DecimalField(null=False, blank=False,
+                                        decimal_places=2, max_digits=32)
     category = models.CharField(max_length=30, choices=SPENDING_CATEGORIES)
 
     transfer_time = models.DateTimeField(null=False, default=timezone.now,
