@@ -94,13 +94,21 @@ class TransactionView(ModelViewSet):
                                                                         last_month_last]))
 
         if not queryset:
-            return Response(
-                {
-                    'message': 'Customer has not made any transactions last month.'
-                }, status=200)
+            return Response({
+                'message': 'Customer has not made any transactions last month.'},
+                status=200)
 
-        total_spending = Decimal(0)
-        total_income = Decimal(0)
+        last_month_trans = []
+        for transaction in queryset:
+            last_month_trans.append({
+                'amount': transaction.amount,
+                'category': transaction.category,
+                'method': transaction.transfer_method,
+                'time': transaction.transfer_time
+            })
+
+        total_spending = Decimal('0')
+        total_income = Decimal('0')
         methods = defaultdict(Decimal)
         spending = defaultdict(Decimal)
 
@@ -121,7 +129,8 @@ class TransactionView(ModelViewSet):
             'transfer_methods': methods,
             'transfer_methods_ratio': methods_ratio,
             'spending': spending,
-            'spending_ratio': spending_ratio
+            'spending_ratio': spending_ratio,
+            'last_month_history': last_month_trans,
         }
 
         return Response(transaction_info)
