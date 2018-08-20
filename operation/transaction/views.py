@@ -44,6 +44,7 @@ class TransactionView(ModelViewSet):
             amount = data['amount']
 
             if not APIConsts.TESTING.value:
+                print('HTTP_AUTHORIZATION' in request.META)
                 token = '' if 'HTTP_AUTHORIZATION' not in request.META else request.META['HTTP_AUTHORIZATION']
             else:
                 token = None
@@ -58,8 +59,8 @@ class TransactionView(ModelViewSet):
                 logger.warning(he)
                 return Response({'error': str(he)}, he.response.status_code)
             except ValidationError as ve:
-                logger.warning(ve)
-                return Response({'error': ve}, status=400)
+                logger.warning(ve.message)
+                return Response({'error': ve.message}, status=400)
 
             return Response({'message': 'Transaction made.'}, status=200)
         else:
