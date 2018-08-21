@@ -41,6 +41,8 @@ class CustomerView(ModelViewSet):
 
         if self.action == 'create':
             permission_classes = [permissions.AllowAny]
+        elif self.action == 'list':
+            permission_classes = [permissions.IsAdminUser]
         else:
             permission_classes = [IsSelfOrAdmin]
         return [permission() for permission in permission_classes]
@@ -117,6 +119,6 @@ class CustomerView(ModelViewSet):
         return Response({'message': 'Account balance updated.', 'balance': customer.balance}, status=200)
 
     @action(methods=['get'], detail=True)
-    def verify(self):
+    def verify(self, request, *args, **kwargs):
         """ Verify that a credential represents admin or user itself."""
         return Response({'message': 'Token verified.'}, status=200)
