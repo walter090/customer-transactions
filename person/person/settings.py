@@ -1,7 +1,6 @@
 import environ
 import logging
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = environ.Path(__file__) - 2
 
 env = environ.Env()
@@ -12,18 +11,11 @@ logging.basicConfig(handlers=[logging.FileHandler(env('LOG_FILE'), 'w', 'utf-8')
                     level=env('LOG_LEVEL'),
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG')
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
-
-# Application definition
 
 DJANGO_APPS = [
     'django.contrib.admin',
