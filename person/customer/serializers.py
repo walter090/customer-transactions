@@ -14,7 +14,6 @@ class CustomerSerializer(HyperlinkedModelSerializer):
             'last_name',
             'birth_year',
             'occupation_type',
-            'balance',
         )
 
 
@@ -29,7 +28,6 @@ class CustomerCreationSerializer(HyperlinkedModelSerializer):
             'last_name',
             'birth_year',
             'occupation_type',
-            'balance',
         )
 
 
