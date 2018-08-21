@@ -2,3 +2,7 @@
 .env
 secret_constants.py
 *.log
+
+*/.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
