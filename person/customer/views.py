@@ -39,18 +39,10 @@ class CustomerView(ModelViewSet):
             permission_classes = [permissions.AllowAny]
             return [permission() for permission in permission_classes]
 
-        if self.action == 'list':
-            permission_classes = [permissions.IsAdminUser]
-        elif self.action == 'destroy' \
-                or self.action == 'update' \
-                or self.action == 'partial_update' \
-                or self.action == 'retrieve' \
-                or self.action == 'verify':
-            permission_classes = [IsSelfOrAdmin]
-        elif self.action == 'transfer':
-            permission_classes = [permissions.IsAdminUser]
-        else:
+        if self.action == 'create':
             permission_classes = [permissions.AllowAny]
+        else:
+            permission_classes = [IsSelfOrAdmin]
         return [permission() for permission in permission_classes]
 
     def create(self, request, *args, **kwargs):
@@ -125,7 +117,6 @@ class CustomerView(ModelViewSet):
         return Response({'message': 'Account balance updated.', 'balance': customer.balance}, status=200)
 
     @action(methods=['get'], detail=True)
-    def verify(self, request, *args, **kwargs):
+    def verify(self):
         """ Verify that a credential represents admin or user itself."""
-        ip = request.META.get('REMOTE_ADDR')
         return Response({'message': 'Token verified.'}, status=200)
