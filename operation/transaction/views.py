@@ -1,3 +1,4 @@
+import csv
 import datetime
 import json
 import logging
@@ -9,6 +10,7 @@ import requests
 from dateutil.relativedelta import relativedelta
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from requests.exceptions import HTTPError
 from rest_framework.decorators import action
@@ -40,6 +42,24 @@ class TransactionView(ModelViewSet):
             return TransactionRetrievalSerializer
         else:
             return TransactionSerializer
+
+    @staticmethod
+    def _get_last_month(rewind_months=None, to_date=False):
+        """ Get datetime object of the first and last days of last months"""
+        if rewind_months is None:
+            rewind_months = 1
+
+        if rewind_months == 0:
+            to_date = True
+
+        today = datetime.date.today()
+        day = today - relativedelta(months=rewind_months)
+
+        last_month_first = datetime.date(day.year, day.month, 1)
+        last_month_last = today + relativedelta(days=1) if to_date else \
+            datetime.date(today.year, today.month, 1) - relativedelta(days=1)
+
+        return last_month_first, last_month_last
 
     def create(self, request, *args, **kwargs):
         """ Create a transaction.
@@ -88,17 +108,12 @@ class TransactionView(ModelViewSet):
             if response.status_code != requests.codes.ok:
                 return Response({'error': response}, status=response.status_code)
 
-        today = datetime.date.today()
-        day = today - relativedelta(months=1)
-        # Fist day of last month.
-        last_month_first = datetime.date(day.year, day.month, 1)
-        # Last day of last month.
-        last_month_last = datetime.date(today.year, today.month, 1) - relativedelta(days=1)
+        last_month_first, last = self._get_last_month(to_date=True)
 
-        # All transactions by this customer in last month.
+        # All transactions by this customer since last month.
         queryset = self.get_queryset().filter(Q(customer_id=customer_id)
-                                              | Q(transfer_time__range=[last_month_first,
-                                                                        last_month_last]))
+                                              & Q(transfer_time__range=[last_month_first,
+                                                                        last]))
 
         if not queryset:
             return Response({
@@ -145,6 +160,44 @@ class TransactionView(ModelViewSet):
         }
 
         return Response(transaction_info)
+
+    @action(methods=['get'], detail=False)
+    def dataset(self, request, *args, **kwargs):
+        rewind = request.query_params.get('rewind')
+
+        try:
+            rewind = int(rewind)
+        except ValueError:
+            rewind = None
+
+        start, end = self._get_last_month(rewind_months=rewind, to_date=True)
+        queryset = self.get_queryset() \
+            .filter(transfer_time__range=[start, end]) \
+            .order_by('transfer_time')
+
+        print(start, end)
+
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="dataset.csv"'
+        writer = csv.writer(response)
+        writer.writerow(['occupation', 'birth_year', 'transfer_method', 'category', 'balance'])
+
+        for transaction in queryset:
+            customer_id = transaction.customer_id
+
+            url = os.path.join(APIConsts.CUSTOMER_API_ROOT.value, customer_id, 'basic', '')
+            customer_response = requests.get(url)
+
+            if customer_response.status_code != requests.codes.ok:
+                continue
+            else:
+                customer = customer_response.json()
+
+            writer.writerow([customer['occupation_type'], customer['birth_year'],
+                             transaction.transfer_method, transaction.category,
+                             transaction.balance_after + transaction.amount])
+
+        return response
 
     def destroy(self, request, *args, **kwargs):
         """ DELETE action not allowed on transactions.
