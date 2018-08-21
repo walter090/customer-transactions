@@ -53,14 +53,13 @@ class CustomerView(ModelViewSet):
         if serializer.is_valid():
             data = serializer.data
             try:
-                Customer.objects.create(username=data['username'],
-                                        email=data['email'],
-                                        first_name=data['first_name'],
-                                        last_name=data['last_name'],
-                                        birth_year=data['birth_year'],
-                                        occupation_type=data['occupation_type'],
-                                        balance=None if 'balance' not in data else data['balance'],
-                                        password=data['password'])
+                Customer.objects.create(username=data.get('username'),
+                                        email=data.get('email'),
+                                        first_name=data.get('first_name'),
+                                        last_name=data.get('last_name'),
+                                        birth_year=data.get('birth_year'),
+                                        occupation_type=data.get('occupation_type'),
+                                        password=data.get('password'))
             except ValidationError as ve:
                 return Response({'error': ve}, status=400)
 

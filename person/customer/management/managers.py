@@ -5,13 +5,12 @@ from django.core.exceptions import ValidationError
 
 
 class CustomerManager(BaseUserManager):
-    def create(self, username, email, first_name,
-               last_name, birth_year, password,
-               balance=None, occupation_type=None, **kwargs):
+    def create(self, username, email,
+               first_name, last_name, birth_year,
+               password, occupation_type=None, **kwargs):
         """ Create a new customer
 
         Args:
-            balance: str, Initial deposit of account.
             username: str, Customer account user name.
             email: str, Customer email address.
             first_name: str, Customer first name.
@@ -46,7 +45,6 @@ class CustomerManager(BaseUserManager):
         customer.birth_year = birth_year
 
         customer.occupation_type = occupation_type if occupation_type is not None else 'MISC'
-        customer.balance = balance if balance else '0'
         customer.set_password(raw_password=password)
 
         customer.full_clean()
@@ -54,7 +52,7 @@ class CustomerManager(BaseUserManager):
 
     def create_superuser(self, username, email, first_name,
                          last_name, birth_year, password,
-                         balance=None, occupation_type=None, **kwargs):
+                         occupation_type=None, **kwargs):
         kwargs.setdefault('is_superuser', True)
         kwargs.setdefault('is_staff', True)
 
@@ -63,4 +61,4 @@ class CustomerManager(BaseUserManager):
 
         self.create(username=username, email=email, first_name=first_name,
                     last_name=last_name, birth_year=birth_year, occupation_type=occupation_type,
-                    password=password, balance=balance, **kwargs)
+                    password=password, **kwargs)
