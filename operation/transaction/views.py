@@ -61,6 +61,26 @@ class TransactionView(ModelViewSet):
 
         return last_month_first, last_month_last
 
+    def list(self, request, *args, **kwargs):
+        token = request.META.get('HTTP_AUTHORIZATION')
+
+        url = os.path.join(APIConsts.CUSTOMER_API_ROOT.value, 'verify_admin', '')
+        headers = {'Authorization': token}
+        response = requests.get(url, headers=headers)
+
+        if response.status_code != requests.codes.ok:
+            return Response(response, status=response.status_code)
+
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     def create(self, request, *args, **kwargs):
         """ Create a transaction.
         """
@@ -71,10 +91,7 @@ class TransactionView(ModelViewSet):
             customer_id = data['customer_id']
             amount = data['amount']
 
-            if not APIConsts.TESTING.value:
-                token = request.META.get('HTTP_AUTHORIZATION')
-            else:
-                token = None
+            token = request.META.get('HTTP_AUTHORIZATION')
 
             try:
                 Transaction.objects.create(customer_id=customer_id,
