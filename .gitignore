@@ -6,3 +6,4 @@ secret_constants.py
 */.elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+*/.ebextensions/
