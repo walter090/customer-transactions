@@ -99,6 +99,16 @@ class CustomerView(ModelViewSet):
 
         return Response(customer_data)
 
+    @action(methods=['get'], detail=True)
+    def basic(self, request, *args, **kwargs):
+        """ Return basic information about customer."""
+        customer = self.get_object()
+        return Response({
+            'username': customer.username,
+            'occupation_type': customer.occupation_type,
+            'birth_year': customer.birth_year,
+        })
+
     @action(methods=['post'], detail=False)
     def transfer(self, request, *args, **kwargs):
         """ Make a transfer and update customer account balance."""
