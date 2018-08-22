@@ -25,3 +25,10 @@ Go to `person` folder and create superuser by typing
 python manage.py createsuperuser
 ```
 Superuser/staff status grants you full access to the data.
+
+## Download dataset
+The transaction API allows you to download anonymous transaction history as a `csv` file. You need an authorization token
+for admin in the request header to perform this action.
+Make a `GET` request to `http://YOUR_API_ROOT/transactions/dataset/` (add a trailing slash to avoid 3xx) to get data 
+since the first day of last month. Include the parameter `rewind` in the request
+ (`http://YOUR_API_ROOT/transactions/dataset/?rewind=3`) to get data from the past 3 months.
