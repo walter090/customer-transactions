@@ -1,5 +1,6 @@
-import environ
 import logging
+
+import environ
 
 BASE_DIR = environ.Path(__file__) - 2
 
@@ -34,6 +35,7 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'storages',
     'oauth2_provider',
+    'corsheaders',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_PARTY_APPS
@@ -54,7 +56,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'person.urls'
 
