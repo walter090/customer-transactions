@@ -194,8 +194,6 @@ class TransactionView(ModelViewSet):
             .filter(transfer_time__range=[start, end]) \
             .order_by('transfer_time')
 
-        print(start, end)
-
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="dataset.csv"'
         writer = csv.writer(response)
