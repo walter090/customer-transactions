@@ -40,7 +40,9 @@ class CustomerView(ModelViewSet):
             permission_classes = [permissions.AllowAny]
             return [permission() for permission in permission_classes]
 
-        if self.action == 'create' or self.action == 'id':
+        if self.action == 'create' or\
+                self.action == 'id' or\
+                self.action == 'basic':
             permission_classes = [permissions.AllowAny]
         elif self.action == 'list' or self.action == 'verify_admin':
             permission_classes = [permissions.IsAdminUser]
@@ -98,7 +100,6 @@ class CustomerView(ModelViewSet):
         """ Return basic information about customer."""
         customer = self.get_object()
         return Response({
-            'username': customer.username,
             'occupation_type': customer.occupation_type,
             'birth_year': customer.birth_year,
         })
