@@ -28,7 +28,6 @@ logger = logging.getLogger(__name__)
 
 class TransactionView(ModelViewSet):
     queryset = Transaction.objects.all()
-    serializer_class = TransactionSerializer
     pagination_class = TransactionPaginator
     filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
 
