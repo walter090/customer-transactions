@@ -181,6 +181,7 @@ class TransactionView(ModelViewSet):
     @action(methods=['get'], detail=False)
     def dataset(self, request, *args, **kwargs):
         rewind = request.query_params.get('rewind')
+        token = request.META.get('HTTP_AUTHORIZATION')
 
         try:
             rewind = int(rewind)
@@ -203,10 +204,11 @@ class TransactionView(ModelViewSet):
             customer_id = transaction.customer_id
 
             url = os.path.join(APIConsts.CUSTOMER_API_ROOT.value, customer_id, 'basic', '')
-            customer_response = requests.get(url)
+            headers = {'Authorization': token}
+            customer_response = requests.get(url, headers=headers)
 
             if customer_response.status_code != requests.codes.ok:
-                continue
+                return Response({'error': 'Not authorized'}, status=405)
             else:
                 customer = customer_response.json()
 
