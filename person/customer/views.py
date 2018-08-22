@@ -40,11 +40,12 @@ class CustomerView(ModelViewSet):
             permission_classes = [permissions.AllowAny]
             return [permission() for permission in permission_classes]
 
-        if self.action == 'create' or\
-                self.action == 'id' or\
-                self.action == 'basic':
+        if self.action == 'create' or \
+                self.action == 'id':
             permission_classes = [permissions.AllowAny]
-        elif self.action == 'list' or self.action == 'verify_admin':
+        elif self.action == 'list' or \
+                self.action == 'verify_admin' or \
+                self.action == 'basic':
             permission_classes = [permissions.IsAdminUser]
         else:
             permission_classes = [IsSelfOrAdmin]
