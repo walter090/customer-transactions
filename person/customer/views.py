@@ -130,5 +130,8 @@ class CustomerView(ModelViewSet):
     @action(methods=['post'], detail=False)
     def id(self, request, *args, **kwargs):
         """ Get user id."""
-        customer = self.get_queryset().get(username=request.data.get('username'))
-        return Response({'customer_id': customer.identifier})
+        try:
+            customer_id = self.get_queryset().get(username=request.data.get('username')).identifier
+        except Customer.DoesNotExist:
+            return Response({'error': 'User not found'}, status=404)
+        return Response({'customer_id': customer_id}, status=200)
