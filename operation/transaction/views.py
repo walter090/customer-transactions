@@ -101,7 +101,7 @@ class TransactionView(ModelViewSet):
                                            token=token)
             except HTTPError as he:
                 logger.warning(he)
-                return Response({'error': str(he)})
+                return Response({'error': he})
             except ValidationError as ve:
                 logger.warning(ve)
                 return Response({'error': ve}, status=400)
@@ -150,7 +150,8 @@ class TransactionView(ModelViewSet):
                 'amount': transaction.amount,
                 'category': transaction.category,
                 'transfer_method': transaction.transfer_method,
-                'transfer_time': transaction.transfer_time
+                'transfer_time': transaction.transfer_time,
+                'balance_after': transaction.balance_after,
             })
 
             if transaction.amount < 0:
