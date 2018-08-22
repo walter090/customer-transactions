@@ -186,6 +186,8 @@ class TransactionView(ModelViewSet):
             rewind = int(rewind)
         except ValueError:
             rewind = None
+        except TypeError:
+            rewind = None
 
         start, end = self._get_last_month(rewind_months=rewind, to_date=True)
         queryset = self.get_queryset() \
