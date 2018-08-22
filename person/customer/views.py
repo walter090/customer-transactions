@@ -39,7 +39,7 @@ class CustomerView(ModelViewSet):
             permission_classes = [permissions.AllowAny]
             return [permission() for permission in permission_classes]
 
-        if self.action == 'create':
+        if self.action == 'create' or self.action == 'id':
             permission_classes = [permissions.AllowAny]
         elif self.action == 'list' or self.action == 'verify_admin':
             permission_classes = [permissions.IsAdminUser]
@@ -105,8 +105,8 @@ class CustomerView(ModelViewSet):
     @action(methods=['post'], detail=False)
     def transfer(self, request, *args, **kwargs):
         """ Make a transfer and update customer account balance."""
-        amount = Decimal(request.data['amount'])
-        customer_id = request.data['customer_id']
+        amount = Decimal(request.data.get('amount'))
+        customer_id = request.data.get('customer_id')
         customer = self.queryset.get(identifier=customer_id)
 
         balance = customer.balance + amount
@@ -126,3 +126,9 @@ class CustomerView(ModelViewSet):
     def verify_admin(self, request, *args, **kwargs):
         """ Verify that a credential represents admin."""
         return Response({'message': 'Token verified.'}, status=200)
+
+    @action(methods=['post'], detail=False)
+    def id(self, request, *args, **kwargs):
+        """ Get user id."""
+        customer = self.get_queryset().get(username=request.data.get('username'))
+        return Response({'customer_id': customer.identifier})
