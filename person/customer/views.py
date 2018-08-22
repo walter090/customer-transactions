@@ -28,7 +28,8 @@ class CustomerView(ModelViewSet):
     def get_serializer_class(self):
         serializer_assignment = {
             'retrieve': serializers.CustomerRetrievalSerializer,
-            'create': serializers.CustomerCreationSerializer
+            'self': serializers.CustomerRetrievalSerializer,
+            'create': serializers.CustomerCreationSerializer,
         }
 
         return serializers.CustomerSerializer if self.action not in serializer_assignment \
@@ -76,7 +77,7 @@ class CustomerView(ModelViewSet):
         if APIConsts.TESTING.value:
             return Response(customer_data, status=200)
 
-        token = '' if 'HTTP_AUTHORIZATION' not in request.META else request.META['HTTP_AUTHORIZATION']
+        token = request.META.get('HTTP_AUTHORIZATION')
         data = {'customer_id': customer_id}
         headers = {'Authorization': token}
         url = os.path.join(APIConsts.TRANSACTION_API_ROOT.value, 'info', '')
@@ -135,3 +136,34 @@ class CustomerView(ModelViewSet):
         except Customer.DoesNotExist:
             return Response({'error': 'User not found'}, status=404)
         return Response({'customer_id': customer_id}, status=200)
+
+    @action(methods=['get'], detail=False)
+    def self(self, request, *args, **kwargs):
+        username = request.query_params.get('username')
+
+        if not request.user.is_staff and request.user.username != username:
+            return Response({'message': 'Not authorized.'}, status=405)
+
+        try:
+            customer = self.get_queryset().get(username=username)
+        except Customer.DoesNotExist:
+            return Response({'message': 'User does not exist'}, status=404)
+
+        customer_id = customer.identifier
+        customer_data = self.get_serializer(customer).data
+
+        token = request.META.get('HTTP_AUTHORIZATION')
+        data = {'customer_id': customer_id}
+        headers = {'Authorization': token}
+        url = os.path.join(APIConsts.TRANSACTION_API_ROOT.value, 'info', '')
+
+        response = requests.post(url=url, data=data, headers=headers)
+
+        if response.status_code != requests.codes.ok:
+            return Response(response,
+                            status=response.status_code)
+
+        transactions_data = response.json()
+        customer_data['transaction_info'] = transactions_data
+
+        return Response(customer_data)
