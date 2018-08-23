@@ -238,7 +238,9 @@ class TransactionView(ModelViewSet):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="dataset.csv"'
         writer = csv.writer(response)
-        writer.writerow(['occupation', 'birth_year', 'transfer_method', 'category', 'balance'])
+        writer.writerow(['customer_id', 'occupation', 'birth_year',
+                         'transfer_method', 'category', 'balance',
+                         'balance_diff'])
 
         for transaction in queryset:
             customer_id = transaction.customer_id
@@ -252,9 +254,10 @@ class TransactionView(ModelViewSet):
             else:
                 customer = customer_response.json()
 
-            writer.writerow([customer['occupation_type'], customer['birth_year'],
-                             transaction.transfer_method, transaction.category,
-                             transaction.balance_after + transaction.amount])
+            writer.writerow([customer['customer_id'], customer['occupation_type'],
+                             customer['birth_year'], transaction.transfer_method,
+                             transaction.category, transaction.balance_after,
+                             transaction.amount, transaction.transfer_time])
 
         return response
 
