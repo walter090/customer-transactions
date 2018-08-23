@@ -45,7 +45,8 @@ class CustomerView(ModelViewSet):
             permission_classes = [permissions.AllowAny]
         elif self.action == 'list' or \
                 self.action == 'verify_admin' or \
-                self.action == 'basic':
+                self.action == 'basic' or \
+                self.action == 'transfer':
             permission_classes = [permissions.IsAdminUser]
         else:
             permission_classes = [IsSelfOrAdmin]
