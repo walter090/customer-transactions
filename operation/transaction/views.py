@@ -240,7 +240,7 @@ class TransactionView(ModelViewSet):
         writer = csv.writer(response)
         writer.writerow(['customer_id', 'occupation', 'birth_year',
                          'transfer_method', 'category', 'balance',
-                         'transfer_time', 'balance_diff'])
+                         'balance_diff', 'transfer_time'])
 
         for transaction in queryset:
             customer_id = transaction.customer_id
