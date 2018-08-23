@@ -1,4 +1,4 @@
-from rest_framework.serializers import HyperlinkedModelSerializer
+from rest_framework.serializers import HyperlinkedModelSerializer, Field
 
 from .models import Transaction
 
@@ -8,6 +8,16 @@ class TransactionSerializer(HyperlinkedModelSerializer):
         model = Transaction
         fields = (
             'customer_id',
+            'amount',
+            'category',
+            'transfer_method',
+        )
+
+
+class TransactionUsernameSerializer(HyperlinkedModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = (
             'amount',
             'category',
             'transfer_method',
