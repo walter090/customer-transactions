@@ -104,6 +104,7 @@ class CustomerView(ModelViewSet):
         return Response({
             'occupation_type': customer.occupation_type,
             'birth_year': customer.birth_year,
+            'customer_id': customer.identifier,
         })
 
     @action(methods=['post'], detail=False)
