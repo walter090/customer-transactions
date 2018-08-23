@@ -127,7 +127,7 @@ class TransactionView(ModelViewSet):
             response = requests.post(url=url, data=request_data)
 
             if response.status_code != requests.codes.ok:
-                return Response({'message': 'Error getting customer id.'})
+                return Response({'message': 'Username does not exist.'})
 
             customer_id = response.json()['customer_id']
             token = request.META.get('HTTP_AUTHORIZATION')
@@ -140,10 +140,10 @@ class TransactionView(ModelViewSet):
                                            token=token)
             except HTTPError as he:
                 logger.warning(he)
-                return Response({'error': he})
+                return Response({'error': str(he)})
             except ValidationError as ve:
                 logger.warning(ve)
-                return Response({'error': ve}, status=400)
+                return Response({'error': str(ve)}, status=400)
 
             return Response({'message': 'Transaction made.'}, status=200)
         else:
