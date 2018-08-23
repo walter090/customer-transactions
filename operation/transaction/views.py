@@ -18,10 +18,10 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
+from . import serializers
 from .management.paginators import TransactionPaginator
 from .management.secret_constants import APIConsts
 from .models import Transaction
-from .serializers import TransactionSerializer, TransactionRetrievalSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -38,9 +38,11 @@ class TransactionView(ModelViewSet):
         if self.action == 'destroy' or \
                 self.action == 'retrieve' or \
                 self.action == 'list':
-            return TransactionRetrievalSerializer
+            return serializers.TransactionRetrievalSerializer
+        elif self.action == 'create_by_username':
+            return serializers.TransactionUsernameSerializer
         else:
-            return TransactionSerializer
+            return serializers.TransactionSerializer
 
     @staticmethod
     def _get_last_month(rewind_months=None, to_date=False):
@@ -87,14 +89,52 @@ class TransactionView(ModelViewSet):
 
         if serializer.is_valid():
             data = serializer.data
-            customer_id = data['customer_id']
-            amount = data['amount']
 
             token = request.META.get('HTTP_AUTHORIZATION')
 
             try:
+                Transaction.objects.create(customer_id=data['customer_id'],
+                                           amount=data['amount'],
+                                           category=data['category'],
+                                           transfer_method=data['transfer_method'],
+                                           token=token)
+            except HTTPError as he:
+                logger.warning(he)
+                return Response({'error': he})
+            except ValidationError as ve:
+                logger.warning(ve)
+                return Response({'error': ve}, status=400)
+
+            return Response({'message': 'Transaction made.'}, status=200)
+        else:
+            return Response({'error': serializer.errors}, status=400)
+
+    @action(methods=['post'], detail=False)
+    def create_by_username(self, request, *args, **kwargs):
+        """ Create a transaction by referencing username
+        """
+        if 'username' not in request.data:
+            return Response({'message': 'Include username in request.'})
+
+        serializer = self.get_serializer(data=request.data)
+        username = request.data['username']
+
+        if serializer.is_valid():
+            data = serializer.data
+
+            url = os.path.join(APIConsts.CUSTOMER_API_ROOT.value, 'id', '')
+            request_data = {'username': username}
+            response = requests.post(url=url, data=request_data)
+
+            if response.status_code != requests.codes.ok:
+                return Response({'message': 'Error getting customer id.'})
+
+            customer_id = response.json()['customer_id']
+            token = request.META.get('HTTP_AUTHORIZATION')
+
+            try:
                 Transaction.objects.create(customer_id=customer_id,
-                                           amount=amount,
+                                           amount=data['amount'],
                                            category=data['category'],
                                            transfer_method=data['transfer_method'],
                                            token=token)
