@@ -108,7 +108,7 @@ ptyprocess==0.5.2
 py==1.5.4
 pyarrow==0.9.0
 pycparser==2.18
-Pygments==2.2.0
+Pygments==2.7.4
 PyJWT==1.6.1
 python-dateutil==2.6.1
 python-oembed==0.2.4
