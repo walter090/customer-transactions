@@ -80,7 +80,7 @@ jupyter-console==5.2.0
 jupyter-core==4.4.0
 kappa==0.6.0
 kombu==4.1.0
-lxml==4.2.1
+lxml==4.6.5
 Markdown==2.6.11
 MarkupSafe==1.0
 mistune==0.8.3
