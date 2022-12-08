@@ -16,7 +16,7 @@ bz2file==0.98
 cached-property==1.4.3
 celery==4.1.0
 cement==2.8.2
-certifi==2018.4.16
+certifi==2022.12.7
 cffi==1.11.5
 cfn-flip==1.0.3
 chardet==3.0.4
